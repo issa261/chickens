@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام الذكاء الاصطناعي - إدارة سلسلة الدواجن والبيض</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        :root {
+            --primary: #2E8B57;
+            --secondary: #1a5276;
+            --accent: #3498db;
+            --light: #f8f9fa;
+            --dark: #2c3e50;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            min-height: 100vh;
+        }
+
+        /* الشريط الجانبي */
+        .sidebar {
+            background: var(--dark);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            font-size: 0.9rem;
+            color: #bdc3c7;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.8rem;
+        }
+
+        .nav-links a {
+            color: #ecf0f1;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        .nav-links i {
+            font-size: 1.2rem;
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            background: var(--light);
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* البطاقات */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .card-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .card-change {
+            font-size: 0.9rem;
+            color: var(--success);
+        }
+
+        /* الأقسام */
+        .section {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f2f6;
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        /* النماذج */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        /* الجداول */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .data-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        /* الرسوم البيانية */
+        .chart-container {
+            height: 300px;
+            margin: 2rem 0;
+        }
+
+        /* نظام الألوان للبطاقات */
+        .bg-primary { background: var(--primary); }
+        .bg-secondary { background: var(--secondary); }
+        .bg-accent { background: var(--accent); }
+        .bg-warning { background: var(--warning); }
+        .bg-success { background: var(--success); }
+        .bg-danger { background: var(--danger); }
+
+        /* الأنيميشن */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* التحميل */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- الشريط الجانبي -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>🐓 نظام الذكاء الاصطناعي</h1>
+                <p>إدارة سلسلة الدواجن والبيض</p>
+                <p style="font-size: 0.8rem; margin-top: 0.5rem;">وزارة الزراعة والثروة السمكية والموارد المائية</p>
+            </div>
+            
+            <ul class="nav-links">
+                <li><a href="#" class="active" onclick="showSection('dashboard')">
+                    📊 لوحة التحكم
+                </a></li>
+                <li><a href="#" onclick="showSection('genetic-analysis')">
+                    🧬 التحليل الوراثي
+                </a></li>
+                <li><a href="#" onclick="showSection('breeding')">
+                    🔬 برنامج التهجين
+                </a></li>
+                <li><a href="#" onclick="showSection('health')">
+                    🏥 الرعاية الصحية
+                </a></li>
+                <li><a href="#" onclick="showSection('production')">
+                    📈 الإنتاج والتتبع
+                </a></li>
+                <li><a href="#" onclick="showSection('reports')">
+                    📋 التقارير والإحصائيات
+                </a></li>
+                <li><a href="#" onclick="showSection('ai-models')">
+                    🤖 نماذج الذكاء الاصطناعي
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- المحتوى الرئيسي -->
+        <main class="main-content">
+            <!-- رأس الصفحة -->
+            <header class="header">
+                <h2 id="section-title">لوحة التحكم الرئيسية</h2>
+                <div class="user-info">
+                    <div class="user-avatar">مدير</div>
+                    <div>
+                        <div style="font-weight: bold;">إدارة سلسلة الدواجن والبيض</div>
+                        <div style="font-size: 0.9rem; color: #666;">وزارة الزراعة والثروة السمكية</div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- لوحة التحكم -->
+            <section id="dashboard" class="section fade-in">
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">إجمالي الطيور</h3>
+                            <div class="card-icon bg-primary">🐔</div>
+                        </div>
+                        <div class="card-value" id="total-birds">12,847</div>
+                        <div class="card-change">+5.2% عن الشهر الماضي</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">معدل التحسين الوراثي</h3>
+                            <div class="card-icon bg-success">📈</div>
+                        </div>
+                        <div class="card-value" id="genetic-progress">24.3%</div>
+                        <div class="card-change">+3.1% خلال 3 أشهر</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">معدل النفوق</h3>
+                            <div class="card-icon bg-danger">⚠️</div>
+                        </div>
+                        <div class="card-value" id="mortality-rate">3.8%</div>
+                        <div class="card-change">-1.2% تحسن</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">كفاءة التحويل الغذائي</h3>
+                            <div class="card-icon bg-warning">🥘</div>
+                        </div>
+                        <div class="card-value" id="feed-conversion">1.92</div>
+                        <div class="card-change">+8.7% تحسن</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <div class="section-header">
+                        <h3 class="section-title">أداء النظام الشهري</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- التحليل الوراثي -->
+            <section id="genetic-analysis" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">التحليل الوراثي المتقدم</h3>
+                    <button class="btn btn-primary" onclick="runGeneticAnalysis()">
+                        تشغيل التحليل الوراثي
+                    </button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">معرف الطائر</label>
+                        <input type="text" class="form-control" id="bird-id" placeholder="أدخل المعرف">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">نوع السلالة</label>
+                        <select class="form-control" id="strain-type">
+                            <option value="local">بلدي</option>
+                            <option value="broiler">برويلر</option>
+                            <option value="hybrid">هجين</option>
+                            <option value="improved">محسن وراثياً</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الجيل الوراثي</label>
+                        <input type="number" class="form-control" id="generation" value="1" min="1">
+                    </div>
+                </div>
+
+                <div id="genetic-results" style="display: none;">
+                    <div class="card">
+                        <h4>نتائج التحليل الوراثي</h4>
+                        <div id="genetic-score" class="card-value"></div>
+                        <div id="genetic-recommendations"></div>
+                        <div class="chart-container">
+                            <canvas id="geneticChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- برنامج التهجين -->
+            <section id="breeding" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">برنامج التهجين الذكي</h3>
+                    <button class="btn btn-success" onclick="optimizeBreeding()">
+                        تحسين برنامج التهجين
+                    </button>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">الوالد الذكر</label>
+                        <select class="form-control" id="male-parent">
+                            <option value="">اختر الوالد الذكر</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">الوالد الأنثى</label>
+                        <select class="form-control" id="female-parent">
+                            <option value="">اختر الوالد الأنثى</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">هدف التهجين</label>
+                        <select class="form-control" id="breeding-goal">
+                            <option value="growth">تحسين النمو</option>
+                            <option value="disease">مقاومة الأمراض</option>
+                            <option value="efficiency">كفاءة التحويل</option>
+                            <option value="balanced">متوازن</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="breeding-results" style="display: none;">
+                    <div class="card">
+                        <h4>نتائج تحليل التهجين</h4>
+                        <div id="breeding-score" class="card-value"></div>
+                        <div id="offspring-predictions"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- باقي الأقسام سيتم إضافتها هنا -->
+            <section id="health" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">نظام الرعاية الصحية</h3>
+                </div>
+                <p>جاري تطوير هذا القسم...</p>
+            </section>
+
+            <section id="production" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">تتبع الإنتاج</h3>
+                </div>
+                <p>جاري تطوير هذا القسم...</p>
+            </section>
+
+            <section id="reports" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">التقارير والإحصائيات</h3>
+                </div>
+                <p>جاري تطوير هذا القسم...</p>
+            </section>
+
+            <section id="ai-models" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">نماذج الذكاء الاصطناعي</h3>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h4>نموذج التنبؤ بالنمو</h4>
+                        <div class="card-value">94.2%</div>
+                        <div>دقة التنبؤ</div>
+                    </div>
+                    <div class="card">
+                        <h4>نموذج التشخيص الصحي</h4>
+                        <div class="card-value">88.7%</div>
+                        <div>دقة التشخيص</div>
+                    </div>
+                    <div class="card">
+                        <h4>نموذج التحسين الوراثي</h4>
+                        <div class="card-value">91.5%</div>
+                        <div>كفاءة النموذج</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // قاعدة بيانات محاكاة
+        const database = {
+            birds: [
+                { id: 'B001', type: 'local', generation: 3, weight: 1.8, fcr: 2.8, health: 8 },
+                { id: 'B002', type: 'broiler', generation: 1, weight: 2.5, fcr: 1.9, health: 7 },
+                { id: 'B003', type: 'hybrid', generation: 2, weight: 2.2, fcr: 2.1, health: 9 }
+            ],
+            performanceData: {
+                labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                growth: [42, 45, 48, 50, 52, 55],
+                efficiency: [2.1, 2.05, 2.0, 1.95, 1.92, 1.89],
+                health: [85, 87, 88, 90, 89, 92]
+            }
+        };
+
+        // تهيئة التطبيق
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadBreedingData();
+            updateDashboard();
+        });
+
+        // إظهار وإخفاء الأقسام
+        function showSection(sectionId) {
+            // إخفاء جميع الأقسام
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // إظهار القسم المطلوب
+            document.getElementById(sectionId).style.display = 'block';
+            
+            // تحديث العنوان
+            const titles = {
+                'dashboard': 'لوحة التحكم الرئيسية',
+                'genetic-analysis': 'التحليل الوراثي المتقدم',
+                'breeding': 'برنامج التهجين الذكي',
+                'health': 'نظام الرعاية الصحية',
+                'production': 'تتبع الإنتاج',
+                'reports': 'التقارير والإحصائيات',
+                'ai-models': 'نماذج الذكاء الاصطناعي'
+            };
+            
+            document.getElementById('section-title').textContent = titles[sectionId] || 'النظام';
+            
+            // تحديث القائمة النشطة
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // تهيئة الرسوم البيانية
+        function initializeCharts() {
+            // رسم بياني الأداء
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: {
+                    labels: database.performanceData.labels,
+                    datasets: [
+                        {
+                            label: 'معدل النمو (جم/يوم)',
+                            data: database.performanceData.growth,
+                            borderColor: '#2E8B57',
+                            backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                            tension: 0.3
+                        },
+                        {
+                            label: 'كفاءة التحويل الغذائي',
+                            data: database.performanceData.efficiency,
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'تطور أداء القطعان خلال 6 أشهر'
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني وراثي
+            const geneticCtx = document.getElementById('geneticChart').getContext('2d');
+            window.geneticChart = new Chart(geneticCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['سرعة النمو', 'مقاومة الأمراض', 'الخصوبة', 'جودة اللحم', 'كفاءة التحويل'],
+                    datasets: [{
+                        label: 'الأداء الحالي',
+                        data: [65, 70, 60, 75, 68],
+                        backgroundColor: 'rgba(46, 139, 87, 0.2)',
+                        borderColor: '#2E8B57'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // تحميل بيانات التهجين
+        function loadBreedingData() {
+            const maleSelect = document.getElementById('male-parent');
+            const femaleSelect = document.getElementById('female-parent');
+            
+            database.birds.forEach(bird => {
+                const option = document.createElement('option');
+                option.value = bird.id;
+                option.textContent = `${bird.id} - ${getTypeName(bird.type)}`;
+                
+                maleSelect.appendChild(option.cloneNode(true));
+                femaleSelect.appendChild(option);
+            });
+        }
+
+        // تشغيل التحليل الوراثي
+        function runGeneticAnalysis() {
+            const birdId = document.getElementById('bird-id').value;
+            const strainType = document.getElementById('strain-type').value;
+            const generation = parseInt(document.getElementById('generation').value);
+            
+            if (!birdId) {
+                alert('يرجى إدخال معرف الطائر');
+                return;
+            }
+            
+            // محاكاة تحميل البيانات
+            document.getElementById('genetic-results').style.display = 'block';
+            document.getElementById('genetic-score').innerHTML = 
+                '<span class="loading"></span> جاري التحليل...';
+            
+            // محاكاة تحليل الذكاء الاصطناعي
+            setTimeout(() => {
+                const geneticScore = calculateGeneticScore(strainType, generation);
+                const recommendations = generateGeneticRecommendations(geneticScore, strainType);
+                
+                document.getElementById('genetic-score').textContent = `النتيجة الوراثية: ${geneticScore}/100`;
+                document.getElementById('genetic-recommendations').innerHTML = 
+                    `<h5>التوصيات:</h5><ul>${recommendations.map(rec => `<li>${rec}</li>`).join('')}</ul>`;
+                
+                // تحديث الرسم البياني
+                updateGeneticChart(geneticScore);
+                
+            }, 2000);
+        }
+
+        // حساب النتيجة الوراثية (محاكاة الذكاء الاصطناعي)
+        function calculateGeneticScore(strainType, generation) {
+            const baseScores = {
+                'local': 65,
+                'broiler': 80,
+                'hybrid': 75,
+                'improved': 85
+            };
+            
+            let score = baseScores[strainType] || 70;
+            score += (generation - 1) * 3; // تحسين مع كل جيل
+            score += Math.random() * 10 - 5; // تغيير عشوائي
+            
+            return Math.min(Math.max(Math.round(score), 0), 100);
+        }
+
+        // توليد التوصيات الوراثية
+        function generateGeneticRecommendations(score, strainType) {
+            const recommendations = [];
+            
+            if (score < 70) {
+                recommendations.push('تحسين برنامج التغذية لتعزيز النمو');
+                recommendations.push('مراجعة برنامج التحصين لتعزيز المناعة');
+            }
+            
+            if (strainType === 'local' && score > 60) {
+                recommendations.push('ممتاز للتهجين مع سلالات محسنة');
+            }
+            
+            if (score >= 80) {
+                recommendations.push('ممتاز كأب في برنامج التهجين');
+                recommendations.push('الاحتفاظ بالسائل المنوي للتلقيح الاصطناعي');
+            }
+            
+            recommendations.push('متابعة الأداء بشكل أسبوعي');
+            recommendations.push('تسجيل جميع البيانات في النظام');
+            
+            return recommendations;
+        }
+
+        // تحديث الرسم البياني الوراثي
+        function updateGeneticChart(score) {
+            const growth = Math.min(score, 85);
+            const disease = Math.min(score - 5, 80);
+            const fertility = Math.min(score - 10, 75);
+            const meatQuality = Math.min(score - 3, 82);
+            const efficiency = Math.min(score - 2, 83);
+            
+            window.geneticChart.data.datasets[0].data = [growth, disease, fertility, meatQuality, efficiency];
+            window.geneticChart.update();
+        }
+
+        // تحسين برنامج التهجين
+        function optimizeBreeding() {
+            const maleParent = document.getElementById('male-parent').value;
+            const femaleParent = document.getElementById('female-parent').value;
+            const breedingGoal = document.getElementById('breeding-goal').value;
+            
+            if (!maleParent || !femaleParent) {
+                alert('يرجى اختيار كلا الوالدين');
+                return;
+            }
+            
+            document.getElementById('breeding-results').style.display = 'block';
+            document.getElementById('breeding-score').innerHTML = 
+                '<span class="loading"></span> جاري تحليل التهجين...';
+            
+            // محاكاة تحليل الذكاء الاصطناعي للتهجين
+            setTimeout(() => {
+                const compatibility = calculateBreedingCompatibility(maleParent, femaleParent);
+                const predictions = generateOffspringPredictions(compatibility, breedingGoal);
+                
+                document.getElementById('breeding-score').textContent = 
+                    `درجة التوافق: ${compatibility}%`;
+                document.getElementById('offspring-predictions').innerHTML = predictions;
+                
+            }, 2000);
+        }
+
+        // حساب توافق التهجين
+        function calculateBreedingCompatibility(maleId, femaleId) {
+            const maleBird = database.birds.find(b => b.id === maleId);
+            const femaleBird = database.birds.find(b => b.id === femaleId);
+            
+            if (!maleBird || !femaleBird) return 70;
+            
+            let score = 75;
+            score += (maleBird.health + femaleBird.health) * 1.5;
+            score += (10 - Math.abs(maleBird.fcr - femaleBird.fcr)) * 2;
+            
+            return Math.min(Math.max(Math.round(score), 0), 100);
+        }
+
+        // توليد تنبؤات النسل
+        function generateOffspringPredictions(compatibility, goal) {
+            const growth = Math.floor(compatibility * 0.9);
+            const diseaseResistance = Math.floor(compatibility * 0.85);
+            const efficiency = Math.floor(compatibility * 0.95);
+            
+            return `
+                <div class="form-grid">
+                    <div class="card">
+                        <h5>سرعة النمو</h5>
+                        <div class="card-value">${growth}%</div>
+                    </div>
+                    <div class="card">
+                        <h5>مقاومة الأمراض</h5>
+                        <div class="card-value">${diseaseResistance}%</div>
+                    </div>
+                    <div class="card">
+                        <h5>كفاءة التحويل</h5>
+                        <div class="card-value">${efficiency}%</div>
+                    </div>
+                </div>
+                <div style="margin-top: 1rem;">
+                    <h5>توصيات التهجين:</h5>
+                    <ul>
+                        <li>${getBreedingRecommendation(goal)}</li>
+                        <li>مراقبة النسل بشكل مكثف في الأسابيع الأولى</li>
+                        <li>تسجيل جميع البيانات في النظام للمتابعة</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        // الحصول على توصيات التهجين
+        function getBreedingRecommendation(goal) {
+            const recommendations = {
+                'growth': 'استخدام أعلاف عالية البروتين لتعزيز النمو',
+                'disease': 'تطبيق برنامج تحصين مكثف ومتابعة صحية منتظمة',
+                'efficiency': 'تحسين جودة العلف ومواعيد التغذية',
+                'balanced': 'برنامج متوازن يشمل جميع الجوانب الإنتاجية'
+            };
+            
+            return recommendations[goal] || 'برنامج تهجين متوازن';
+        }
+
+        // الحصول على اسم النوع
+        function getTypeName(type) {
+            const names = {
+                'local': 'بلدي',
+                'broiler': 'برويلر',
+                'hybrid': 'هجين',
+                'improved': 'محسن وراثياً'
+            };
+            
+            return names[type] || type;
+        }
+
+        // تحديث لوحة التحكم
+        function updateDashboard() {
+            // محاكاة تحديث البيانات في الوقت الحقيقي
+            setInterval(() => {
+                const change = (Math.random() * 2 - 1) * 0.5;
+                const currentRate = parseFloat(document.getElementById('mortality-rate').textContent);
+                const newRate = Math.max(2, Math.min(6, (currentRate + change).toFixed(1)));
+                document.getElementById('mortality-rate').textContent = newRate + '%';
+                
+                const changeText = change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
+                document.querySelector('#mortality-rate').nextElementSibling.textContent = changeText;
+                
+            }, 5000);
+        }
+    </script>
+</body>
+  </html>
