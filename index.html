@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام الذكاء الاصطناعي - إدارة سلسلة الدواجن والبيض</title>
+    <title>نظام الذكاء الاصطناعي - إدارة سلاسل القيمة للدواجن والبيض</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -36,7 +36,7 @@
 
         .app-container {
             display: grid;
-            grid-template-columns: 280px 1fr;
+            grid-template-columns: 300px 1fr;
             min-height: 100vh;
         }
 
@@ -48,6 +48,8 @@
             box-shadow: 3px 0 15px rgba(0,0,0,0.3);
             backdrop-filter: blur(10px);
             z-index: 100;
+            overflow-y: auto;
+            max-height: 100vh;
         }
 
         .logo {
@@ -66,6 +68,7 @@
         .logo p {
             font-size: 0.9rem;
             color: #bdc3c7;
+            line-height: 1.4;
         }
 
         .nav-links {
@@ -73,18 +76,19 @@
         }
 
         .nav-links li {
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.5rem;
         }
 
         .nav-links a {
             color: #ecf0f1;
             text-decoration: none;
-            padding: 0.8rem 1rem;
+            padding: 0.7rem 1rem;
             border-radius: 8px;
             display: flex;
             align-items: center;
             gap: 10px;
             transition: all 0.3s ease;
+            font-size: 0.9rem;
         }
 
         .nav-links a:hover, .nav-links a.active {
@@ -94,7 +98,7 @@
         }
 
         .nav-links i {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         /* المحتوى الرئيسي */
@@ -442,12 +446,13 @@
                 top: 0;
                 right: 0;
                 height: 100%;
-                width: 280px;
+                width: 300px;
                 background: rgba(44, 62, 80, 0.95);
                 z-index: 999;
                 transform: translateX(100%);
                 transition: transform 0.3s ease;
                 padding: 2rem 1rem;
+                overflow-y: auto;
             }
             
             .mobile-sidebar.active {
@@ -513,6 +518,45 @@
             max-width: 150px;
             filter: brightness(0) invert(1);
         }
+
+        /* قيمة السلسلة */
+        .value-chain {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .chain-step {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            width: 180px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .chain-step:hover {
+            transform: translateY(-5px);
+        }
+
+        .chain-step i {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .chain-step h4 {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+
+        .chain-step p {
+            font-size: 0.9rem;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -526,25 +570,43 @@
         <nav class="sidebar" id="sidebar">
             <div class="logo">
                 <h1>🐓 نظام الذكاء الاصطناعي</h1>
-                <p>إدارة سلسلة الدواجن والبيض</p>
+                <p>إدارة سلاسل القيمة للدواجن والبيض</p>
                 <p style="font-size: 0.8rem; margin-top: 0.5rem;">وزارة الزراعة والثروة السمكية والموارد المائية</p>
             </div>
             
             <ul class="nav-links">
                 <li><a href="#" class="active" onclick="showSection('dashboard')">
-                    <i class="fas fa-chart-line"></i> 📊 لوحة التحكم
+                    <i class="fas fa-chart-line"></i> 📊 لوحة التحكم الرئيسية
+                </a></li>
+                <li><a href="#" onclick="showSection('value-chain')">
+                    <i class="fas fa-link"></i> 🔗 سلسلة القيمة الكاملة
+                </a></li>
+                <li><a href="#" onclick="showSection('breeding-farms')">
+                    <i class="fas fa-egg"></i> 🥚 مزارع الأمهات والبيض
+                </a></li>
+                <li><a href="#" onclick="showSection('hatcheries')">
+                    <i class="fas fa-kiwi-bird"></i> 🐣 المفاقس والتفريخ
+                </a></li>
+                <li><a href="#" onclick="showSection('rearing')">
+                    <i class="fas fa-home"></i> 🏠 التربية والتغذية
+                </a></li>
+                <li><a href="#" onclick="showSection('inputs')">
+                    <i class="fas fa-truck-loading"></i> 🚚 المدخلات والعلاجات
+                </a></li>
+                <li><a href="#" onclick="showSection('health')">
+                    <i class="fas fa-heartbeat"></i> 🏥 الرعاية الصحية واللقاحات
+                </a></li>
+                <li><a href="#" onclick="showSection('slaughterhouses')">
+                    <i class="fas fa-utensils"></i> 🍗 المسالخ الآلية واليدوية
+                </a></li>
+                <li><a href="#" onclick="showSection('marketing')">
+                    <i class="fas fa-shopping-cart"></i> 🛒 التسويق والتوزيع
                 </a></li>
                 <li><a href="#" onclick="showSection('genetic-analysis')">
                     <i class="fas fa-dna"></i> 🧬 التحليل الوراثي
                 </a></li>
                 <li><a href="#" onclick="showSection('breeding')">
                     <i class="fas fa-venus-mars"></i> 🔬 برنامج التهجين
-                </a></li>
-                <li><a href="#" onclick="showSection('health')">
-                    <i class="fas fa-heartbeat"></i> 🏥 الرعاية الصحية
-                </a></li>
-                <li><a href="#" onclick="showSection('production')">
-                    <i class="fas fa-chart-bar"></i> 📈 الإنتاج والتتبع
                 </a></li>
                 <li><a href="#" onclick="showSection('reports')">
                     <i class="fas fa-file-alt"></i> 📋 التقارير والإحصائيات
@@ -571,30 +633,49 @@
             </div>
             <div class="logo">
                 <h1>🐓 نظام الذكاء الاصطناعي</h1>
-                <p>إدارة سلسلة الدواجن والبيض</p>
+                <p>إدارة سلاسل القيمة للدواجن والبيض</p>
+                <p style="font-size: 0.8rem; margin-top: 0.5rem;">وزارة الزراعة والثروة السمكية والموارد المائية</p>
             </div>
             
             <ul class="nav-links">
                 <li><a href="#" class="active" onclick="showSection('dashboard'); closeMobileMenu()">
                     <i class="fas fa-chart-line"></i> 📊 لوحة التحكم
                 </a></li>
+                <li><a href="#" onclick="showSection('value-chain'); closeMobileMenu()">
+                    <i class="fas fa-link"></i> 🔗 سلسلة القيمة
+                </a></li>
+                <li><a href="#" onclick="showSection('breeding-farms'); closeMobileMenu()">
+                    <i class="fas fa-egg"></i> 🥚 مزارع الأمهات
+                </a></li>
+                <li><a href="#" onclick="showSection('hatcheries'); closeMobileMenu()">
+                    <i class="fas fa-kiwi-bird"></i> 🐣 المفاقس
+                </a></li>
+                <li><a href="#" onclick="showSection('rearing'); closeMobileMenu()">
+                    <i class="fas fa-home"></i> 🏠 التربية
+                </a></li>
+                <li><a href="#" onclick="showSection('inputs'); closeMobileMenu()">
+                    <i class="fas fa-truck-loading"></i> 🚚 المدخلات
+                </a></li>
+                <li><a href="#" onclick="showSection('health'); closeMobileMenu()">
+                    <i class="fas fa-heartbeat"></i> 🏥 الرعاية
+                </a></li>
+                <li><a href="#" onclick="showSection('slaughterhouses'); closeMobileMenu()">
+                    <i class="fas fa-utensils"></i> 🍗 المسالخ
+                </a></li>
+                <li><a href="#" onclick="showSection('marketing'); closeMobileMenu()">
+                    <i class="fas fa-shopping-cart"></i> 🛒 التسويق
+                </a></li>
                 <li><a href="#" onclick="showSection('genetic-analysis'); closeMobileMenu()">
                     <i class="fas fa-dna"></i> 🧬 التحليل الوراثي
                 </a></li>
                 <li><a href="#" onclick="showSection('breeding'); closeMobileMenu()">
-                    <i class="fas fa-venus-mars"></i> 🔬 برنامج التهجين
-                </a></li>
-                <li><a href="#" onclick="showSection('health'); closeMobileMenu()">
-                    <i class="fas fa-heartbeat"></i> 🏥 الرعاية الصحية
-                </a></li>
-                <li><a href="#" onclick="showSection('production'); closeMobileMenu()">
-                    <i class="fas fa-chart-bar"></i> 📈 الإنتاج والتتبع
+                    <i class="fas fa-venus-mars"></i> 🔬 التهجين
                 </a></li>
                 <li><a href="#" onclick="showSection('reports'); closeMobileMenu()">
-                    <i class="fas fa-file-alt"></i> 📋 التقارير والإحصائيات
+                    <i class="fas fa-file-alt"></i> 📋 التقارير
                 </a></li>
                 <li><a href="#" onclick="showSection('ai-models'); closeMobileMenu()">
-                    <i class="fas fa-robot"></i> 🤖 نماذج الذكاء الاصطناعي
+                    <i class="fas fa-robot"></i> 🤖 الذكاء الاصطناعي
                 </a></li>
             </ul>
         </nav>
@@ -615,8 +696,8 @@
                 <div class="user-info">
                     <div class="user-avatar floating">مدير</div>
                     <div>
-                        <div style="font-weight: bold;">إدارة سلسلة الدواجن والبيض</div>
-                        <div style="font-size: 0.9rem; color: #666;">وزارة الزراعة والثروة السمكية</div>
+                        <div style="font-weight: bold;">إدارة سلاسل القيمة للدواجن والبيض</div>
+                        <div style="font-size: 0.9rem; color: #666;">وزارة الزراعة والثروة السمكية والموارد المائية</div>
                     </div>
                 </div>
             </header>
@@ -626,25 +707,25 @@
                 <div class="dashboard-cards">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">إجمالي الطيور</h3>
+                            <h3 class="card-title">إجمالي الطيور في السلسلة</h3>
                             <div class="card-icon bg-primary pulse">🐔</div>
                         </div>
-                        <div class="card-value" id="total-birds">12,847</div>
+                        <div class="card-value" id="total-birds">245,847</div>
                         <div class="card-change"><i class="fas fa-arrow-up"></i> +5.2% عن الشهر الماضي</div>
                     </div>
                     
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">معدل التحسين الوراثي</h3>
+                            <h3 class="card-title">كفاءة السلسلة الإنتاجية</h3>
                             <div class="card-icon bg-success">📈</div>
                         </div>
-                        <div class="card-value" id="genetic-progress">24.3%</div>
+                        <div class="card-value" id="chain-efficiency">87.3%</div>
                         <div class="card-change"><i class="fas fa-arrow-up"></i> +3.1% خلال 3 أشهر</div>
                     </div>
                     
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">معدل النفوق</h3>
+                            <h3 class="card-title">معدل النفوق في السلسلة</h3>
                             <div class="card-icon bg-danger">⚠️</div>
                         </div>
                         <div class="card-value" id="mortality-rate">3.8%</div>
@@ -663,7 +744,7 @@
 
                 <div class="section">
                     <div class="section-header">
-                        <h3 class="section-title">أداء النظام الشهري</h3>
+                        <h3 class="section-title">أداء السلسلة الإنتاجية الشهري</h3>
                         <div>
                             <button class="btn btn-primary" onclick="exportData()">
                                 <i class="fas fa-download"></i> تصدير البيانات
@@ -693,7 +774,7 @@
                             <h3 class="card-title">الاستهلاك الشهري للعلف</h3>
                             <div class="card-icon bg-secondary">🌾</div>
                         </div>
-                        <div class="card-value">245 طن</div>
+                        <div class="card-value">1,245 طن</div>
                         <div class="card-change"><i class="fas fa-arrow-down"></i> -5% توفير</div>
                         <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
                             <i class="fas fa-info-circle"></i> تحسين في كفاءة الاستهلاك بسبب برنامج التهجين
@@ -701,6 +782,247 @@
                     </div>
                 </div>
             </section>
+
+            <!-- سلسلة القيمة -->
+            <section id="value-chain" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">سلسلة القيمة الكاملة للدواجن والبيض</h3>
+                </div>
+                
+                <div class="value-chain">
+                    <div class="chain-step">
+                        <i class="fas fa-egg"></i>
+                        <h4>مزارع الأمهات</h4>
+                        <p>إنتاج بيض التفقيس</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-kiwi-bird"></i>
+                        <h4>المفاقس</h4>
+                        <p>تفريخ الكتاكيت</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-home"></i>
+                        <h4>مزارع التربية</h4>
+                        <p>تربية الكتاكيت</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-truck-loading"></i>
+                        <h4>المدخلات</h4>
+                        <p>الأعلاف والعلاجات</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-heartbeat"></i>
+                        <h4>الرعاية الصحية</h4>
+                        <p>اللقاحات والعلاجات</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-utensils"></i>
+                        <h4>المسالخ</h4>
+                        <p>آلية ويدوية</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h4>التسويق</h4>
+                        <p>التوزيع والتسويق</p>
+                    </div>
+                    <div class="chain-step">
+                        <i class="fas fa-users"></i>
+                        <h4>المستهلك</h4>
+                        <p>المستهلك النهائي</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h4>مؤشرات أداء السلسلة</h4>
+                        <div class="card-value">87.3%</div>
+                        <div>الكفاءة الإجمالية</div>
+                        <div class="chart-container">
+                            <canvas id="chainChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h4>تكاليف السلسلة</h4>
+                        <div class="card-value">12.5 مليون</div>
+                        <div>ريال يمني / شهر</div>
+                        <div class="chart-container">
+                            <canvas id="costChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- مزارع الأمهات والبيض -->
+            <section id="breeding-farms" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">مزارع الأمهات وإنتاج بيض التفقيس</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> إضافة مزرعة
+                    </button>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">إجمالي الأمهات</h3>
+                            <div class="card-icon bg-primary">🐓</div>
+                        </div>
+                        <div class="card-value">45,200</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +2.1% زيادة</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">إنتاج البيض اليومي</h3>
+                            <div class="card-icon bg-success">🥚</div>
+                        </div>
+                        <div class="card-value">38,540</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +3.7% زيادة</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">نسبة الخصوبة</h3>
+                            <div class="card-icon bg-warning">🔬</div>
+                        </div>
+                        <div class="card-value">92.5%</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +1.2% تحسن</div>
+                    </div>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>اسم المزرعة</th>
+                                <th>عدد الأمهات</th>
+                                <th>إنتاج البيض/يوم</th>
+                                <th>نسبة الخصوبة</th>
+                                <th>المحافظة</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>مزرعة النخبة</td>
+                                <td>12,000</td>
+                                <td>10,200</td>
+                                <td>94.2%</td>
+                                <td>صنعاء</td>
+                                <td><span class="status-badge status-active">نشط</span></td>
+                            </tr>
+                            <tr>
+                                <td>مزرعة الأمل</td>
+                                <td>8,500</td>
+                                <td>7,100</td>
+                                <td>91.8%</td>
+                                <td>تعز</td>
+                                <td><span class="status-badge status-active">نشط</span></td>
+                            </tr>
+                            <tr>
+                                <td>مزرعة الخير</td>
+                                <td>6,800</td>
+                                <td>5,750</td>
+                                <td>90.5%</td>
+                                <td>حضرموت</td>
+                                <td><span class="status-badge status-active">نشط</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- المفاقس والتفريخ -->
+            <section id="hatcheries" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">المفاقس وعمليات التفريخ</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> إضافة مفقس
+                    </button>
+                </div>
+                
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">عدد المفاقس</h3>
+                            <div class="card-icon bg-primary">🏭</div>
+                        </div>
+                        <div class="card-value">24</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +2 مفاقس جديدة</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">سعة التفريخ الشهرية</h3>
+                            <div class="card-icon bg-success">🐣</div>
+                        </div>
+                        <div class="card-value">1.2 مليون</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +8.5% زيادة</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">نسبة الفقس</h3>
+                            <div class="card-icon bg-warning">📊</div>
+                        </div>
+                        <div class="card-value">87.3%</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +2.1% تحسن</div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="hatcheryChart"></canvas>
+                </div>
+            </section>
+
+            <!-- الأقسام الأخرى سيتم إضافتها هنا -->
+            <section id="rearing" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">مزارع التربية والتغذية</h3>
+                </div>
+                <p>جاري تطوير هذا القسم...</p>
+            </section>
+
+            <section id="inputs" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">إدارة المدخلات والعلاجات</h3>
+                </div>
+                <p>جاري تطوير هذا القسم...</p>
+            </section>
+
+            <section id="health" class="section" style="display: none;">
+                <div class="section-header">
+                    <h3 class="section-title">نظام الرعاية الصحية واللقاحات</h3>
+                <button class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> إضافة تقرير صحي
+                    </button>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">التحصينات المكتملة</h3>
+                            <div class="card-icon bg-success">💉</div>
+                        </div>
+                        <div class="card-value">98.2%</div>
+                        <div class="card-change"><i class="fas fa-check-circle"></i> نسبة التحصين</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الحالات الصحية</h3>
+                            <div class="card-icon bg-warning">🏥</div>
+                        </div>
+                        <div class="card-value">0.8%</div>
+                        <div class="card-change"><i class="fas fa-arrow-down"></i> -0.3% تحسن</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="healthChart"></canvas>
+                </div>
+            </section>
+
+            <!-- باقي الأقسام -->
+            <!-- ... سيتم إضافة الأقسام المتبقية بنفس النمط ... -->
 
             <!-- التحليل الوراثي -->
             <section id="genetic-analysis" class="section" style="display: none;">
@@ -782,64 +1104,6 @@
                         <div id="breeding-score" class="card-value"></div>
                         <div id="offspring-predictions"></div>
                     </div>
-                </div>
-            </section>
-
-            <!-- باقي الأقسام سيتم إضافتها هنا -->
-            <section id="health" class="section" style="display: none;">
-                <div class="section-header">
-                    <h3 class="section-title">نظام الرعاية الصحية</h3>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-plus-circle"></i> إضافة تقرير صحي
-                    </button>
-                </div>
-                <div class="dashboard-cards">
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">التحصينات المكتملة</h3>
-                            <div class="card-icon bg-success">💉</div>
-                        </div>
-                        <div class="card-value">98.2%</div>
-                        <div class="card-change"><i class="fas fa-check-circle"></i> نسبة التحصين</div>
-                    </div>
-                    
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">الحالات الصحية</h3>
-                            <div class="card-icon bg-warning">🏥</div>
-                        </div>
-                        <div class="card-value">0.8%</div>
-                        <div class="card-change"><i class="fas fa-arrow-down"></i> -0.3% تحسن</div>
-                    </div>
-                </div>
-                <div class="chart-container">
-                    <canvas id="healthChart"></canvas>
-                </div>
-            </section>
-
-            <section id="production" class="section" style="display: none;">
-                <div class="section-header">
-                    <h3 class="section-title">تتبع الإنتاج</h3>
-                    <button class="btn btn-primary">
-                        <i class="fas fa-sync-alt"></i> تحديث البيانات
-                    </button>
-                </div>
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>المعرف</th>
-                                <th>النوع</th>
-                                <th>الجيل</th>
-                                <th>الوزن (كجم)</th>
-                                <th>كفاءة التحويل</th>
-                                <th>الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="production-table-body">
-                            <!-- سيتم ملؤها بالبيانات -->
-                        </tbody>
-                    </table>
                 </div>
             </section>
 
@@ -932,7 +1196,8 @@
                 growth: [42, 45, 48, 50, 52, 55],
                 efficiency: [2.1, 2.05, 2.0, 1.95, 1.92, 1.89],
                 health: [85, 87, 88, 90, 89, 92],
-                production: [12000, 12500, 12800, 13000, 13200, 12847]
+                production: [12000, 12500, 12800, 13000, 13200, 12847],
+                chainEfficiency: [82, 83, 84, 85, 86, 87.3]
             }
         };
 
@@ -948,7 +1213,6 @@
             updateDashboard();
             startSlideShow();
             setupMobileMenu();
-            populateProductionTable();
         });
 
         // إعداد القائمة للموبايل
@@ -1003,10 +1267,16 @@
             // تحديث العنوان
             const titles = {
                 'dashboard': 'لوحة التحكم الرئيسية',
+                'value-chain': 'سلسلة القيمة الكاملة للدواجن والبيض',
+                'breeding-farms': 'مزارع الأمهات وإنتاج بيض التفقيس',
+                'hatcheries': 'المفاقس وعمليات التفريخ',
+                'rearing': 'مزارع التربية والتغذية',
+                'inputs': 'إدارة المدخلات والعلاجات',
+                'health': 'نظام الرعاية الصحية واللقاحات',
+                'slaughterhouses': 'المسالخ الآلية واليدوية',
+                'marketing': 'التسويق والتوزيع',
                 'genetic-analysis': 'التحليل الوراثي المتقدم',
                 'breeding': 'برنامج التهجين الذكي',
-                'health': 'نظام الرعاية الصحية',
-                'production': 'تتبع الإنتاج',
                 'reports': 'التقارير والإحصائيات',
                 'ai-models': 'نماذج الذكاء الاصطناعي'
             };
@@ -1071,25 +1341,116 @@
                 }
             });
 
-            // رسم بياني وراثي
-            const geneticCtx = document.getElementById('geneticChart').getContext('2d');
-            window.geneticChart = new Chart(geneticCtx, {
-                type: 'radar',
+            // رسم بياني كفاءة السلسلة
+            const chainCtx = document.getElementById('chainChart').getContext('2d');
+            new Chart(chainCtx, {
+                type: 'bar',
                 data: {
-                    labels: ['سرعة النمو', 'مقاومة الأمراض', 'الخصوبة', 'جودة اللحم', 'كفاءة التحويل'],
+                    labels: ['الأمهات', 'المفاقس', 'التربية', 'المسالخ', 'التسويق'],
                     datasets: [{
-                        label: 'الأداء الحالي',
-                        data: [65, 70, 60, 75, 68],
-                        backgroundColor: 'rgba(46, 139, 87, 0.2)',
-                        borderColor: '#2E8B57',
-                        pointBackgroundColor: '#2E8B57'
+                        label: 'كفاءة المرحلة (%)',
+                        data: [92, 87, 85, 88, 84],
+                        backgroundColor: [
+                            'rgba(46, 139, 87, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(155, 89, 182, 0.7)'
+                        ],
+                        borderColor: [
+                            '#2E8B57',
+                            '#3498db',
+                            '#f39c12',
+                            '#e74c3c',
+                            '#9b59b6'
+                        ],
+                        borderWidth: 1
                     }]
                 },
                 options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'كفاءة مراحل سلسلة القيمة'
+                        }
+                    },
                     scales: {
-                        r: {
+                        y: {
                             beginAtZero: true,
                             max: 100
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني التكاليف
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            new Chart(costCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['الأعلاف', 'الرعاية الصحية', 'الأيدي العاملة', 'النقل', 'الإدارة'],
+                    datasets: [{
+                        data: [45, 15, 20, 12, 8],
+                        backgroundColor: [
+                            'rgba(46, 139, 87, 0.7)',
+                            'rgba(52, 152, 219, 0.7)',
+                            'rgba(243, 156, 18, 0.7)',
+                            'rgba(231, 76, 60, 0.7)',
+                            'rgba(155, 89, 182, 0.7)'
+                        ],
+                        borderColor: [
+                            '#2E8B57',
+                            '#3498db',
+                            '#f39c12',
+                            '#e74c3c',
+                            '#9b59b6'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'توزيع تكاليف سلسلة القيمة'
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني المفاقس
+            const hatcheryCtx = document.getElementById('hatcheryChart').getContext('2d');
+            new Chart(hatcheryCtx, {
+                type: 'line',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [
+                        {
+                            label: 'سعة التفريخ (ألف)',
+                            data: [980, 1020, 1050, 1100, 1150, 1200],
+                            borderColor: '#2E8B57',
+                            backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'نسبة الفقس (%)',
+                            data: [84, 85, 85.5, 86, 86.5, 87.3],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'تطور أداء المفاقس خلال 6 أشهر'
                         }
                     }
                 }
@@ -1176,6 +1537,30 @@
                     }
                 }
             });
+
+            // رسم بياني وراثي
+            const geneticCtx = document.getElementById('geneticChart').getContext('2d');
+            window.geneticChart = new Chart(geneticCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['سرعة النمو', 'مقاومة الأمراض', 'الخصوبة', 'جودة اللحم', 'كفاءة التحويل'],
+                    datasets: [{
+                        label: 'الأداء الحالي',
+                        data: [65, 70, 60, 75, 68],
+                        backgroundColor: 'rgba(46, 139, 87, 0.2)',
+                        borderColor: '#2E8B57',
+                        pointBackgroundColor: '#2E8B57'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
         }
 
         // تحميل بيانات التهجين
@@ -1194,32 +1579,6 @@
                 
                 maleSelect.appendChild(option.cloneNode(true));
                 femaleSelect.appendChild(option);
-            });
-        }
-
-        // ملء جدول الإنتاج
-        function populateProductionTable() {
-            const tableBody = document.getElementById('production-table-body');
-            tableBody.innerHTML = '';
-            
-            database.birds.forEach(bird => {
-                const row = document.createElement('tr');
-                
-                // تحديد حالة الطائر بناءً على صحته
-                const status = bird.health >= 8 ? 
-                    '<span class="status-badge status-active">نشط</span>' : 
-                    '<span class="status-badge status-inactive">يتطلب مراقبة</span>';
-                
-                row.innerHTML = `
-                    <td>${bird.id}</td>
-                    <td>${getTypeName(bird.type)}</td>
-                    <td>${bird.generation}</td>
-                    <td>${bird.weight} كجم</td>
-                    <td>${bird.fcr}</td>
-                    <td>${status}</td>
-                `;
-                
-                tableBody.appendChild(row);
             });
         }
 
@@ -1461,4 +1820,4 @@
         }
     </script>
 </body>
-</html>
+                </html>
