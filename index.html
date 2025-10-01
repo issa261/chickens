@@ -6,6 +6,7 @@
     <title>نظام الذكاء الاصطناعي - إدارة سلسلة الدواجن والبيض</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #2E8B57;
@@ -16,6 +17,7 @@
             --warning: #f39c12;
             --danger: #e74c3c;
             --success: #27ae60;
+            --gold: #FFD700;
         }
 
         * {
@@ -26,9 +28,10 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
             min-height: 100vh;
             color: #333;
+            overflow-x: hidden;
         }
 
         .app-container {
@@ -39,10 +42,12 @@
 
         /* الشريط الجانبي */
         .sidebar {
-            background: var(--dark);
+            background: rgba(44, 62, 80, 0.95);
             color: white;
             padding: 2rem 1rem;
-            box-shadow: 3px 0 15px rgba(0,0,0,0.2);
+            box-shadow: 3px 0 15px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            z-index: 100;
         }
 
         .logo {
@@ -55,6 +60,7 @@
         .logo h1 {
             font-size: 1.4rem;
             margin-bottom: 0.5rem;
+            color: var(--gold);
         }
 
         .logo p {
@@ -84,6 +90,7 @@
         .nav-links a:hover, .nav-links a.active {
             background: var(--accent);
             color: white;
+            transform: translateX(5px);
         }
 
         .nav-links i {
@@ -95,10 +102,37 @@
             background: var(--light);
             padding: 2rem;
             overflow-y: auto;
+            position: relative;
+        }
+
+        .hero-slider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .slide.active {
+            opacity: 0.15;
         }
 
         .header {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 1.5rem;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -106,6 +140,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
         }
 
         .user-info {
@@ -124,6 +161,7 @@
             justify-content: center;
             color: white;
             font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         /* البطاقات */
@@ -132,36 +170,42 @@
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
         }
 
         .card {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             padding: 1.5rem;
             border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
         }
 
         .card-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 1rem;
         }
 
         .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .card-title {
@@ -171,24 +215,32 @@
         }
 
         .card-value {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: bold;
             color: var(--primary);
             margin: 0.5rem 0;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
 
         .card-change {
             font-size: 0.9rem;
             color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         /* الأقسام */
         .section {
-            background: white;
+            background: rgba(255, 255, 255, 0.9);
             border-radius: 15px;
             padding: 2rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .section-header {
@@ -201,7 +253,7 @@
         }
 
         .section-title {
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             color: var(--dark);
             font-weight: 600;
         }
@@ -231,12 +283,13 @@
             border: 2px solid #e9ecef;
             border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .form-control:focus {
             border-color: var(--accent);
             outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
         }
 
         .btn {
@@ -247,6 +300,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .btn-primary {
@@ -256,11 +310,19 @@
 
         .btn-primary:hover {
             background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }
 
         .btn-success {
             background: var(--success);
             color: white;
+        }
+
+        .btn-success:hover {
+            background: #219955;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
         }
 
         /* الجداول */
@@ -321,6 +383,7 @@
         .bg-warning { background: var(--warning); }
         .bg-success { background: var(--success); }
         .bg-danger { background: var(--danger); }
+        .bg-gold { background: var(--gold); }
 
         /* الأنيميشن */
         @keyframes fadeIn {
@@ -347,12 +410,120 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        /* تصميم متجاوب */
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1000;
+                background: var(--accent);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            }
+            
+            .mobile-sidebar {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100%;
+                width: 280px;
+                background: rgba(44, 62, 80, 0.95);
+                z-index: 999;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                padding: 2rem 1rem;
+            }
+            
+            .mobile-sidebar.active {
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .section-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* تأثيرات إضافية */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .glow {
+            box-shadow: 0 0 20px rgba(46, 139, 87, 0.5);
+        }
+
+        /* شعار الوزارة */
+        .ministry-logo {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .ministry-logo img {
+            max-width: 150px;
+            filter: brightness(0) invert(1);
+        }
     </style>
 </head>
 <body>
+    <!-- زر القائمة للموبايل -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" style="display: none;">
+        <i class="fas fa-bars"></i>
+    </button>
+
     <div class="app-container">
         <!-- الشريط الجانبي -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="logo">
                 <h1>🐓 نظام الذكاء الاصطناعي</h1>
                 <p>إدارة سلسلة الدواجن والبيض</p>
@@ -361,36 +532,88 @@
             
             <ul class="nav-links">
                 <li><a href="#" class="active" onclick="showSection('dashboard')">
-                    📊 لوحة التحكم
+                    <i class="fas fa-chart-line"></i> 📊 لوحة التحكم
                 </a></li>
                 <li><a href="#" onclick="showSection('genetic-analysis')">
-                    🧬 التحليل الوراثي
+                    <i class="fas fa-dna"></i> 🧬 التحليل الوراثي
                 </a></li>
                 <li><a href="#" onclick="showSection('breeding')">
-                    🔬 برنامج التهجين
+                    <i class="fas fa-venus-mars"></i> 🔬 برنامج التهجين
                 </a></li>
                 <li><a href="#" onclick="showSection('health')">
-                    🏥 الرعاية الصحية
+                    <i class="fas fa-heartbeat"></i> 🏥 الرعاية الصحية
                 </a></li>
                 <li><a href="#" onclick="showSection('production')">
-                    📈 الإنتاج والتتبع
+                    <i class="fas fa-chart-bar"></i> 📈 الإنتاج والتتبع
                 </a></li>
                 <li><a href="#" onclick="showSection('reports')">
-                    📋 التقارير والإحصائيات
+                    <i class="fas fa-file-alt"></i> 📋 التقارير والإحصائيات
                 </a></li>
                 <li><a href="#" onclick="showSection('ai-models')">
-                    🤖 نماذج الذكاء الاصطناعي
+                    <i class="fas fa-robot"></i> 🤖 نماذج الذكاء الاصطناعي
+                </a></li>
+            </ul>
+
+            <div class="ministry-logo">
+                <div style="font-size: 0.8rem; color: #bdc3c7; margin-bottom: 0.5rem;">شعار الوزارة</div>
+                <div style="width: 100%; height: 80px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-feather-alt" style="font-size: 2rem; color: #bdc3c7;"></i>
+                </div>
+            </div>
+        </nav>
+
+        <!-- الشريط الجانبي للموبايل -->
+        <nav class="mobile-sidebar" id="mobileSidebar">
+            <div style="text-align: left; margin-bottom: 2rem;">
+                <button id="closeMobileMenu" style="background: none; border: none; color: white; font-size: 1.5rem;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="logo">
+                <h1>🐓 نظام الذكاء الاصطناعي</h1>
+                <p>إدارة سلسلة الدواجن والبيض</p>
+            </div>
+            
+            <ul class="nav-links">
+                <li><a href="#" class="active" onclick="showSection('dashboard'); closeMobileMenu()">
+                    <i class="fas fa-chart-line"></i> 📊 لوحة التحكم
+                </a></li>
+                <li><a href="#" onclick="showSection('genetic-analysis'); closeMobileMenu()">
+                    <i class="fas fa-dna"></i> 🧬 التحليل الوراثي
+                </a></li>
+                <li><a href="#" onclick="showSection('breeding'); closeMobileMenu()">
+                    <i class="fas fa-venus-mars"></i> 🔬 برنامج التهجين
+                </a></li>
+                <li><a href="#" onclick="showSection('health'); closeMobileMenu()">
+                    <i class="fas fa-heartbeat"></i> 🏥 الرعاية الصحية
+                </a></li>
+                <li><a href="#" onclick="showSection('production'); closeMobileMenu()">
+                    <i class="fas fa-chart-bar"></i> 📈 الإنتاج والتتبع
+                </a></li>
+                <li><a href="#" onclick="showSection('reports'); closeMobileMenu()">
+                    <i class="fas fa-file-alt"></i> 📋 التقارير والإحصائيات
+                </a></li>
+                <li><a href="#" onclick="showSection('ai-models'); closeMobileMenu()">
+                    <i class="fas fa-robot"></i> 🤖 نماذج الذكاء الاصطناعي
                 </a></li>
             </ul>
         </nav>
 
         <!-- المحتوى الرئيسي -->
         <main class="main-content">
+            <!-- خلفية متغيرة -->
+            <div class="hero-slider" id="heroSlider">
+                <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1596733430284-f7437764b1a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1589923188651-268a35c0d0bf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80');"></div>
+                <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1552728089-57bdde30beb3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1925&q=80');"></div>
+            </div>
+
             <!-- رأس الصفحة -->
             <header class="header">
                 <h2 id="section-title">لوحة التحكم الرئيسية</h2>
                 <div class="user-info">
-                    <div class="user-avatar">مدير</div>
+                    <div class="user-avatar floating">مدير</div>
                     <div>
                         <div style="font-weight: bold;">إدارة سلسلة الدواجن والبيض</div>
                         <div style="font-size: 0.9rem; color: #666;">وزارة الزراعة والثروة السمكية</div>
@@ -404,10 +627,10 @@
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">إجمالي الطيور</h3>
-                            <div class="card-icon bg-primary">🐔</div>
+                            <div class="card-icon bg-primary pulse">🐔</div>
                         </div>
                         <div class="card-value" id="total-birds">12,847</div>
-                        <div class="card-change">+5.2% عن الشهر الماضي</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +5.2% عن الشهر الماضي</div>
                     </div>
                     
                     <div class="card">
@@ -416,7 +639,7 @@
                             <div class="card-icon bg-success">📈</div>
                         </div>
                         <div class="card-value" id="genetic-progress">24.3%</div>
-                        <div class="card-change">+3.1% خلال 3 أشهر</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +3.1% خلال 3 أشهر</div>
                     </div>
                     
                     <div class="card">
@@ -425,7 +648,7 @@
                             <div class="card-icon bg-danger">⚠️</div>
                         </div>
                         <div class="card-value" id="mortality-rate">3.8%</div>
-                        <div class="card-change">-1.2% تحسن</div>
+                        <div class="card-change"><i class="fas fa-arrow-down"></i> -1.2% تحسن</div>
                     </div>
                     
                     <div class="card">
@@ -434,16 +657,47 @@
                             <div class="card-icon bg-warning">🥘</div>
                         </div>
                         <div class="card-value" id="feed-conversion">1.92</div>
-                        <div class="card-change">+8.7% تحسن</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +8.7% تحسن</div>
                     </div>
                 </div>
 
                 <div class="section">
                     <div class="section-header">
                         <h3 class="section-title">أداء النظام الشهري</h3>
+                        <div>
+                            <button class="btn btn-primary" onclick="exportData()">
+                                <i class="fas fa-download"></i> تصدير البيانات
+                            </button>
+                        </div>
                     </div>
                     <div class="chart-container">
                         <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">مشروع التهجين الوطني</h3>
+                            <div class="card-icon bg-gold">🏆</div>
+                        </div>
+                        <div class="card-value">94.5%</div>
+                        <div class="card-change"><i class="fas fa-check-circle"></i> نسبة النجاح</div>
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                            <i class="fas fa-info-circle"></i> مشروع تحسين السلالات المحلية بالتعاون مع الوزارة
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الاستهلاك الشهري للعلف</h3>
+                            <div class="card-icon bg-secondary">🌾</div>
+                        </div>
+                        <div class="card-value">245 طن</div>
+                        <div class="card-change"><i class="fas fa-arrow-down"></i> -5% توفير</div>
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                            <i class="fas fa-info-circle"></i> تحسين في كفاءة الاستهلاك بسبب برنامج التهجين
+                        </div>
                     </div>
                 </div>
             </section>
@@ -453,7 +707,7 @@
                 <div class="section-header">
                     <h3 class="section-title">التحليل الوراثي المتقدم</h3>
                     <button class="btn btn-primary" onclick="runGeneticAnalysis()">
-                        تشغيل التحليل الوراثي
+                        <i class="fas fa-play-circle"></i> تشغيل التحليل الوراثي
                     </button>
                 </div>
 
@@ -478,7 +732,7 @@
                 </div>
 
                 <div id="genetic-results" style="display: none;">
-                    <div class="card">
+                    <div class="card glow">
                         <h4>نتائج التحليل الوراثي</h4>
                         <div id="genetic-score" class="card-value"></div>
                         <div id="genetic-recommendations"></div>
@@ -494,7 +748,7 @@
                 <div class="section-header">
                     <h3 class="section-title">برنامج التهجين الذكي</h3>
                     <button class="btn btn-success" onclick="optimizeBreeding()">
-                        تحسين برنامج التهجين
+                        <i class="fas fa-cogs"></i> تحسين برنامج التهجين
                     </button>
                 </div>
 
@@ -523,7 +777,7 @@
                 </div>
 
                 <div id="breeding-results" style="display: none;">
-                    <div class="card">
+                    <div class="card glow">
                         <h4>نتائج تحليل التهجين</h4>
                         <div id="breeding-score" class="card-value"></div>
                         <div id="offspring-predictions"></div>
@@ -535,44 +789,129 @@
             <section id="health" class="section" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title">نظام الرعاية الصحية</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus-circle"></i> إضافة تقرير صحي
+                    </button>
                 </div>
-                <p>جاري تطوير هذا القسم...</p>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">التحصينات المكتملة</h3>
+                            <div class="card-icon bg-success">💉</div>
+                        </div>
+                        <div class="card-value">98.2%</div>
+                        <div class="card-change"><i class="fas fa-check-circle"></i> نسبة التحصين</div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">الحالات الصحية</h3>
+                            <div class="card-icon bg-warning">🏥</div>
+                        </div>
+                        <div class="card-value">0.8%</div>
+                        <div class="card-change"><i class="fas fa-arrow-down"></i> -0.3% تحسن</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="healthChart"></canvas>
+                </div>
             </section>
 
             <section id="production" class="section" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title">تتبع الإنتاج</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-sync-alt"></i> تحديث البيانات
+                    </button>
                 </div>
-                <p>جاري تطوير هذا القسم...</p>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>المعرف</th>
+                                <th>النوع</th>
+                                <th>الجيل</th>
+                                <th>الوزن (كجم)</th>
+                                <th>كفاءة التحويل</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="production-table-body">
+                            <!-- سيتم ملؤها بالبيانات -->
+                        </tbody>
+                    </table>
+                </div>
             </section>
 
             <section id="reports" class="section" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title">التقارير والإحصائيات</h3>
+                    <div>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-file-pdf"></i> تصدير PDF
+                        </button>
+                        <button class="btn btn-success" style="margin-right: 10px;">
+                            <i class="fas fa-file-excel"></i> تصدير Excel
+                        </button>
+                    </div>
                 </div>
-                <p>جاري تطوير هذا القسم...</p>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <h4>تقرير الأداء الشهري</h4>
+                        <div class="card-value">تم الإنشاء</div>
+                        <div>آخر تحديث: اليوم</div>
+                        <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;">
+                            <i class="fas fa-eye"></i> عرض التقرير
+                        </button>
+                    </div>
+                    <div class="card">
+                        <h4>تقرير التهجين الوراثي</h4>
+                        <div class="card-value">جاهز</div>
+                        <div>آخر تحديث: أمس</div>
+                        <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;">
+                            <i class="fas fa-eye"></i> عرض التقرير
+                        </button>
+                    </div>
+                    <div class="card">
+                        <h4>تقرير الصحة والسلامة</h4>
+                        <div class="card-value">قيد المراجعة</div>
+                        <div>آخر تحديث: قبل ساعتين</div>
+                        <button class="btn btn-primary" style="margin-top: 1rem; width: 100%;">
+                            <i class="fas fa-eye"></i> عرض التقرير
+                        </button>
+                    </div>
+                </div>
             </section>
 
             <section id="ai-models" class="section" style="display: none;">
                 <div class="section-header">
                     <h3 class="section-title">نماذج الذكاء الاصطناعي</h3>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-brain"></i> تدريب النماذج
+                    </button>
                 </div>
                 <div class="dashboard-cards">
                     <div class="card">
                         <h4>نموذج التنبؤ بالنمو</h4>
                         <div class="card-value">94.2%</div>
                         <div>دقة التنبؤ</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +2.1% تحسن</div>
                     </div>
                     <div class="card">
                         <h4>نموذج التشخيص الصحي</h4>
                         <div class="card-value">88.7%</div>
                         <div>دقة التشخيص</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +1.5% تحسن</div>
                     </div>
                     <div class="card">
                         <h4>نموذج التحسين الوراثي</h4>
                         <div class="card-value">91.5%</div>
                         <div>كفاءة النموذج</div>
+                        <div class="card-change"><i class="fas fa-arrow-up"></i> +3.2% تحسن</div>
                     </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="aiModelsChart"></canvas>
                 </div>
             </section>
         </main>
@@ -584,22 +923,72 @@
             birds: [
                 { id: 'B001', type: 'local', generation: 3, weight: 1.8, fcr: 2.8, health: 8 },
                 { id: 'B002', type: 'broiler', generation: 1, weight: 2.5, fcr: 1.9, health: 7 },
-                { id: 'B003', type: 'hybrid', generation: 2, weight: 2.2, fcr: 2.1, health: 9 }
+                { id: 'B003', type: 'hybrid', generation: 2, weight: 2.2, fcr: 2.1, health: 9 },
+                { id: 'B004', type: 'improved', generation: 4, weight: 2.3, fcr: 2.0, health: 9 },
+                { id: 'B005', type: 'local', generation: 2, weight: 1.7, fcr: 2.9, health: 8 }
             ],
             performanceData: {
                 labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
                 growth: [42, 45, 48, 50, 52, 55],
                 efficiency: [2.1, 2.05, 2.0, 1.95, 1.92, 1.89],
-                health: [85, 87, 88, 90, 89, 92]
+                health: [85, 87, 88, 90, 89, 92],
+                production: [12000, 12500, 12800, 13000, 13200, 12847]
             }
         };
+
+        // متغيرات النظام
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const slideInterval = 5000; // تغيير الصورة كل 5 ثوان
 
         // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
             initializeCharts();
             loadBreedingData();
             updateDashboard();
+            startSlideShow();
+            setupMobileMenu();
+            populateProductionTable();
         });
+
+        // إعداد القائمة للموبايل
+        function setupMobileMenu() {
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            const closeMobileMenuBtn = document.getElementById('closeMobileMenu');
+            
+            if (window.innerWidth <= 1024) {
+                mobileMenuBtn.style.display = 'block';
+            }
+            
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileSidebar.classList.add('active');
+            });
+            
+            closeMobileMenuBtn.addEventListener('click', closeMobileMenu);
+            
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 1024) {
+                    mobileMenuBtn.style.display = 'none';
+                    mobileSidebar.classList.remove('active');
+                } else {
+                    mobileMenuBtn.style.display = 'block';
+                }
+            });
+        }
+        
+        function closeMobileMenu() {
+            document.getElementById('mobileSidebar').classList.remove('active');
+        }
+
+        // بدء عرض الشرائح
+        function startSlideShow() {
+            setInterval(() => {
+                slides[currentSlide].classList.remove('active');
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add('active');
+            }, slideInterval);
+        }
 
         // إظهار وإخفاء الأقسام
         function showSection(sectionId) {
@@ -629,6 +1018,11 @@
                 link.classList.remove('active');
             });
             event.target.classList.add('active');
+            
+            // إغلاق القائمة الجانبية على الموبايل
+            if (window.innerWidth <= 1024) {
+                closeMobileMenu();
+            }
         }
 
         // تهيئة الرسوم البيانية
@@ -645,14 +1039,16 @@
                             data: database.performanceData.growth,
                             borderColor: '#2E8B57',
                             backgroundColor: 'rgba(46, 139, 87, 0.1)',
-                            tension: 0.3
+                            tension: 0.3,
+                            fill: true
                         },
                         {
                             label: 'كفاءة التحويل الغذائي',
                             data: database.performanceData.efficiency,
                             borderColor: '#3498db',
                             backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                            tension: 0.3
+                            tension: 0.3,
+                            fill: true
                         }
                     ]
                 },
@@ -662,6 +1058,14 @@
                         title: {
                             display: true,
                             text: 'تطور أداء القطعان خلال 6 أشهر'
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false
                         }
                     }
                 }
@@ -677,13 +1081,96 @@
                         label: 'الأداء الحالي',
                         data: [65, 70, 60, 75, 68],
                         backgroundColor: 'rgba(46, 139, 87, 0.2)',
-                        borderColor: '#2E8B57'
+                        borderColor: '#2E8B57',
+                        pointBackgroundColor: '#2E8B57'
                     }]
                 },
                 options: {
                     scales: {
                         r: {
                             beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني الصحة
+            const healthCtx = document.getElementById('healthChart').getContext('2d');
+            new Chart(healthCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+                    datasets: [{
+                        label: 'نسبة الصحة العامة',
+                        data: [85, 87, 88, 90, 89, 92],
+                        backgroundColor: 'rgba(46, 139, 87, 0.7)',
+                        borderColor: '#2E8B57',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'تطور الصحة العامة للقطيع'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // رسم بياني نماذج الذكاء الاصطناعي
+            const aiCtx = document.getElementById('aiModelsChart').getContext('2d');
+            new Chart(aiCtx, {
+                type: 'line',
+                data: {
+                    labels: ['الشهر 1', 'الشهر 2', 'الشهر 3', 'الشهر 4', 'الشهر 5', 'الشهر 6'],
+                    datasets: [
+                        {
+                            label: 'نموذج التنبؤ بالنمو',
+                            data: [89, 90, 91, 92, 93, 94.2],
+                            borderColor: '#2E8B57',
+                            backgroundColor: 'rgba(46, 139, 87, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'نموذج التشخيص الصحي',
+                            data: [83, 84, 85, 86, 87.5, 88.7],
+                            borderColor: '#3498db',
+                            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'نموذج التحسين الوراثي',
+                            data: [85, 86, 87, 88.5, 90, 91.5],
+                            borderColor: '#f39c12',
+                            backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'تطور دقة نماذج الذكاء الاصطناعي'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 80,
                             max: 100
                         }
                     }
@@ -696,13 +1183,43 @@
             const maleSelect = document.getElementById('male-parent');
             const femaleSelect = document.getElementById('female-parent');
             
+            // مسح الخيارات الحالية
+            maleSelect.innerHTML = '<option value="">اختر الوالد الذكر</option>';
+            femaleSelect.innerHTML = '<option value="">اختر الوالد الأنثى</option>';
+            
             database.birds.forEach(bird => {
                 const option = document.createElement('option');
                 option.value = bird.id;
-                option.textContent = `${bird.id} - ${getTypeName(bird.type)}`;
+                option.textContent = `${bird.id} - ${getTypeName(bird.type)} (الجيل ${bird.generation})`;
                 
                 maleSelect.appendChild(option.cloneNode(true));
                 femaleSelect.appendChild(option);
+            });
+        }
+
+        // ملء جدول الإنتاج
+        function populateProductionTable() {
+            const tableBody = document.getElementById('production-table-body');
+            tableBody.innerHTML = '';
+            
+            database.birds.forEach(bird => {
+                const row = document.createElement('tr');
+                
+                // تحديد حالة الطائر بناءً على صحته
+                const status = bird.health >= 8 ? 
+                    '<span class="status-badge status-active">نشط</span>' : 
+                    '<span class="status-badge status-inactive">يتطلب مراقبة</span>';
+                
+                row.innerHTML = `
+                    <td>${bird.id}</td>
+                    <td>${getTypeName(bird.type)}</td>
+                    <td>${bird.generation}</td>
+                    <td>${bird.weight} كجم</td>
+                    <td>${bird.fcr}</td>
+                    <td>${status}</td>
+                `;
+                
+                tableBody.appendChild(row);
             });
         }
 
@@ -760,15 +1277,23 @@
             if (score < 70) {
                 recommendations.push('تحسين برنامج التغذية لتعزيز النمو');
                 recommendations.push('مراجعة برنامج التحصين لتعزيز المناعة');
+                recommendations.push('تجنب استخدامه كأب في برامج التهجين المتقدمة');
             }
             
             if (strainType === 'local' && score > 60) {
-                recommendations.push('ممتاز للتهجين مع سلالات محسنة');
+                recommendations.push('ممتاز للتهجين مع سلالات محسنة لتحسين النمو');
+                recommendations.push('الحفاظ على هذه السلالة للمشاريع المستقبلية');
             }
             
             if (score >= 80) {
                 recommendations.push('ممتاز كأب في برنامج التهجين');
                 recommendations.push('الاحتفاظ بالسائل المنوي للتلقيح الاصطناعي');
+                recommendations.push('يمكن استخدامه لتحسين السلالات المنخفضة الأداء');
+            }
+            
+            if (score >= 90) {
+                recommendations.push('سلالة متميزة - يمكن اعتمادها كسلالة أساسية');
+                recommendations.push('تسجيل السلالة في سجل السلالات المحسنة');
             }
             
             recommendations.push('متابعة الأداء بشكل أسبوعي');
@@ -827,6 +1352,11 @@
             score += (maleBird.health + femaleBird.health) * 1.5;
             score += (10 - Math.abs(maleBird.fcr - femaleBird.fcr)) * 2;
             
+            // تحسين إضافي بناءً على الهدف
+            if (maleBird.type === 'broiler' && femaleBird.type === 'local') {
+                score += 10; // تهجين مثالي لتحسين النمو مع الحفاظ على المقاومة
+            }
+            
             return Math.min(Math.max(Math.round(score), 0), 100);
         }
 
@@ -835,6 +1365,22 @@
             const growth = Math.floor(compatibility * 0.9);
             const diseaseResistance = Math.floor(compatibility * 0.85);
             const efficiency = Math.floor(compatibility * 0.95);
+            const fertility = Math.floor(compatibility * 0.8);
+            
+            let focusArea = '';
+            switch(goal) {
+                case 'growth':
+                    focusArea = 'سيتم التركيز على تحسين سرعة النمو وزيادة الوزن';
+                    break;
+                case 'disease':
+                    focusArea = 'سيتم التركيز على تعزيز المناعة ومقاومة الأمراض';
+                    break;
+                case 'efficiency':
+                    focusArea = 'سيتم التركيز على تحسين كفاءة التحويل الغذائي';
+                    break;
+                default:
+                    focusArea = 'سيتم تطبيق برنامج متوازن لتحسين جميع الخصائص';
+            }
             
             return `
                 <div class="form-grid">
@@ -850,10 +1396,15 @@
                         <h5>كفاءة التحويل</h5>
                         <div class="card-value">${efficiency}%</div>
                     </div>
+                    <div class="card">
+                        <h5>الخصوبة</h5>
+                        <div class="card-value">${fertility}%</div>
+                    </div>
                 </div>
                 <div style="margin-top: 1rem;">
                     <h5>توصيات التهجين:</h5>
                     <ul>
+                        <li>${focusArea}</li>
                         <li>${getBreedingRecommendation(goal)}</li>
                         <li>مراقبة النسل بشكل مكثف في الأسابيع الأولى</li>
                         <li>تسجيل جميع البيانات في النظام للمتابعة</li>
@@ -865,9 +1416,9 @@
         // الحصول على توصيات التهجين
         function getBreedingRecommendation(goal) {
             const recommendations = {
-                'growth': 'استخدام أعلاف عالية البروتين لتعزيز النمو',
+                'growth': 'استخدام أعلاف عالية البروتين (22-24%) لتعزيز النمو',
                 'disease': 'تطبيق برنامج تحصين مكثف ومتابعة صحية منتظمة',
-                'efficiency': 'تحسين جودة العلف ومواعيد التغذية',
+                'efficiency': 'تحسين جودة العلف ومواعيد التغذية وتقليل الهدر',
                 'balanced': 'برنامج متوازن يشمل جميع الجوانب الإنتاجية'
             };
             
@@ -892,14 +1443,22 @@
             setInterval(() => {
                 const change = (Math.random() * 2 - 1) * 0.5;
                 const currentRate = parseFloat(document.getElementById('mortality-rate').textContent);
-                const newRate = Math.max(2, Math.min(6, (currentRate + change).toFixed(1)));
+                const newRate = Math.max(2, Math.min(6, (parseFloat(currentRate) + change).toFixed(1)));
                 document.getElementById('mortality-rate').textContent = newRate + '%';
                 
-                const changeText = change > 0 ? `+${change.toFixed(1)}%` : `${change.toFixed(1)}%`;
-                document.querySelector('#mortality-rate').nextElementSibling.textContent = changeText;
+                const changeText = change > 0 ? 
+                    `<i class="fas fa-arrow-up"></i> +${change.toFixed(1)}%` : 
+                    `<i class="fas fa-arrow-down"></i> ${change.toFixed(1)}%`;
+                document.querySelector('#mortality-rate').nextElementSibling.innerHTML = changeText;
                 
             }, 5000);
         }
+
+        // تصدير البيانات
+        function exportData() {
+            alert('جارٍ تصدير البيانات... سيتم تحميل الملف خلال ثوانٍ');
+            // في التطبيق الحقيقي، سيتم هنا استدعاء API لتصدير البيانات
+        }
     </script>
 </body>
-  </html>
+    </html>
